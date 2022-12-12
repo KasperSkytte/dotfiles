@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+#if a join token is available from env install teleport for
+#the current user and run as a user-level systemd service
+#otherwise do nothing. For a system-wide (root) level teleport service
+#just use the install script from the web UI
+set -eu
+
+teleport_join_token=${teleport_join_token:-""}
+
+#perhaps check for policykit-1 before doing anything (user-level service)
+if [ -n "$teleport_join_token" ]
+then
+  go_version=${go_version:-"1.19"}
+  teleport_release=${teleport_release:-"v11.0.1"} #including the "v" prefix
+  teleport_ca_pin_hash="{{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").teleport_capin.value }}"
+  teleport_proxy="{{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").teleport_proxy.value }}"
+  teleport_dir="${HOME}/.local/teleport"
+  systemd_service_dir="${HOME}/.config/systemd/user/"
+  BINDIR="${HOME}/.local/bin"
+
+  mkdir -p "$teleport_dir"
+  #TODO: if in sudoers add APT repo and install newest
+  #if [ "$sudo_group" == "sudo" ]
+
+  #TODO: precompiled support for ARM
+  # curl https://get.gravitational.com/teleport-v11.0.1-linux-arm-bin.tar.gz.sha256
+  # curl -O https://get.gravitational.com/teleport-v11.0.1-linux-arm-bin.tar.gz
+  # shasum -a 256 teleport-v11.0.1-linux-arm-bin.tar.gz
+  # tar -xzf teleport-v11.0.1-linux-arm-bin.tar.gz
+  # cd teleport
+  # sudo ./install
+  #if not in sudoers, install teleport from pre-compiled binaries
+  if ! command -v "${BINDIR}/teleport" >/dev/null 2>&1
+  then
+    if [ ! -s "${BINDIR}/teleport" ]
+    then
+      echo "Installing teleport (pre-compiled binaries) into ${BINDIR}..."
+      mkdir -p "${BINDIR}"
+      tmpdir=$(mktemp -d)
+      pushd "${tmpdir}"
+      wget "https://get.gravitational.com/teleport-${teleport_release}-linux-amd64-bin.tar.gz" -O teleport.tar.gz --no-check-certificate
+      tar zxf teleport.tar.gz
+      rm -f teleport.tar.gz
+      cp -f teleport/{teleport,tbot,tctl,tsh} -t "${BINDIR}"
+      popd
+      rm -rf "$tmpdir"
+    fi
+  fi
+
+  if [ ! -s "${teleport_dir}/teleport.yaml" ]
+  then
+    echo "Adding teleport.yaml config file (at ${teleport_dir}/teleport.yaml)..."
+    #still need advertise_ip
+    ${BINDIR}/teleport node configure \
+      --token "${teleport_join_token}" \
+      --data-dir "${teleport_dir}" \
+      --join-method token \
+      --ca-pin "${teleport_ca_pin_hash}" \
+      --proxy "${teleport_proxy}" \
+      --output "${teleport_dir}/teleport.yaml"
+  else
+    echo "${teleport_dir}/teleport.yaml file already exists. Delete it if you want to replace it."
+  fi
+  if [ ! -s "${systemd_service_dir}/teleport.service" ]
+  then
+    echo "Adding teleport service file (in ${systemd_service_dir})"
+    mkdir -p "${systemd_service_dir}"
+    cat << teleport.service > "${systemd_service_dir}/teleport.service"
+    [Unit]
+    Description=Teleport SSH Service (user: $(whoami))
+    After=network.target
+
+    [Service]
+    Type=simple
+    Restart=on-failure
+    EnvironmentFile=-${teleport_dir}/systemd/teleport
+    ExecStart=${BINDIR}/teleport start --roles=node -c ${teleport_dir}/teleport.yaml
+    ExecReload=/bin/kill -HUP \$MAINPID
+    PIDFile=/run/teleport.pid
+    LimitNOFILE=8192
+
+    [Install]
+    WantedBy=default.target
+teleport.service
+  elif [ -s "${systemd_service_dir}/teleport.service" ]
+  then
+    echo "${systemd_service_dir}/teleport.service file already exists. Delete it if you want to update it."
+  fi
+  echo "Enabling and starting teleport service"
+  systemctl --user daemon-reload
+  systemctl --user enable --now teleport.service
+  systemctl --user restart teleport.service
+  loginctl enable-linger
+else
+  echo "Teleport has not been installed and configured (for the current user) since no \"teleport_join_token\" shell variable is available."
+fi
