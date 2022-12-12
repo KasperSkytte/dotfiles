@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#this file has things for both .zshrc and .bashrc
+
+#uncomment to log all terminal sessions to log file
+#mkdir -p ${HOME}/.shell_logs && grep -qx "$PPID" <(pgrep -x "script") || (scr>
+
+#source functions
+if [ -f ~/.shell_functions ]
+then
+    . ~/.shell_functions
+fi
+
+#source variables
+if [ -f ~/.shell_vars ]
+then
+    . ~/.shell_vars
+fi
+
+#source aliases
+if [ -f ~/.shell_aliases ]
+then
+    . ~/.shell_aliases
+fi
+
+#bitwarden shell completion
+if command -v bw 1> /dev/null
+then
+  eval "$(bw completion --shell zsh); compdef _bw bw;"
+fi
+
+# if on bioservers go to mounted home folder
+if [[ "$USER" == "ksa@bio.aau.dk" ]]
+then
+  if [[ "$PWD" == "/user/bio.aau.dk/ksa" ]]
+  then
+    homedir="/user_data/ksa/"
+    if [[ -d "$homedir" ]]
+    then
+      cd "$homedir"
+    fi
+  fi
+fi
+

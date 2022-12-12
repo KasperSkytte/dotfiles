@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+#from https://github.com/SixArm/gpg-encrypt
+#password-encrypt a file
+gpg_encrypt() {
+  gpg \
+    --symmetric \
+    --cipher-algo aes256 \
+    --digest-algo sha256 \
+    --cert-digest-algo sha256 \
+    --compress-algo none -z 0 \
+    --s2k-mode 3 \
+    --s2k-digest-algo sha512 \
+    --s2k-count 65011712 \
+    --force-mdc \
+    --quiet --no-greeting \
+    --pinentry-mode=loopback \
+    "$@"
+}
+
+#decrypt a password-encrypted file made from the above function
+gpg_decrypt() {
+  umask_save=$(umask)
+  umask 0077
+  gpg \
+    --decrypt \
+    --quiet \
+    --no-greeting \
+    --pinentry-mode=loopback \
+    "$@"
+  umask "$umask_save"
+}
+
+# function to push a Gotify notification on start/end of long-running scripts
+# also captures stdout to a file and prints last line with the message
+gotifier() {
+  logfile=$(mktemp)
+
+  post_gotify() {
+  token="{{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").gotify_token.value }}"
+    title="$1"
+    markdown_msg="$2"
+    priority="$3"
+    URL="{{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").gotify_url.value }}/message?token=${token}"
+
+    echo "Gotifying..."
+
+    curl \
+      -s \
+      -S \
+      --data '{"message": "'"${markdown_msg}"'", "title": "'"${title}"'", "priority":'"${priority}"', "extras": {"client::display": {"contentType": "text/markdown"}}}' \
+      -X POST \
+      -H Content-Type:application/json \
+      "$URL" &> /dev/null
+  }
+
+  post_gotify \
+    "Started process on $(hostname)" \
+    "**Command:** \`$*\`" \
+    "2"
+
+  (
+    # shellcheck disable=SC2048
+    $*
+  ) |& tee -a "$logfile"
+
+  post_gotify \
+    "Finished process on $(hostname)" \
+    "**Last line (log file at: $logfile):** \
+    \`$(tail -n 1 "$logfile")\`" \
+    "5"
+
+  echo "Log file at: $logfile"  
+}
+
+#list the IP of online hosts on the specified IP/subnet
+scan_subnet() {
+  subnet=${1:-"$(grep -o '^[^ ]*' <(hostname -I))/24"}
+  echo "Scanning subnet: $subnet"
+  nmap -n -sn "$subnet" -oG - | awk '/Up$/{print $2}'
+}
+
+#welcome message showing the status of certain things
+welcome_msg() {
+  echo "Welcome Kasper! The dotfiles repo is installed on this account. Shell is: ${SHELL}"
+  echo
+
+  #1password-cli status
+  if command -v bw 1> /dev/null
+  then
+    printf "%20s: %s\n" "Bitwarden CLI" "installed ($(bw --version || true))"
+  else
+    printf "%20s: %s\n" "Bitwarden CLI" "NOT installed"
+  fi
+
+  #teleport status
+  if command -v teleport 1> /dev/null
+  then
+    printf "%20s: %s\n" "teleport" "installed ($(teleport version || true))"
+  else
+    printf "%20s: %s\n" "teleport" "NOT installed"
+  fi
+
+  #github SSH key status
+  if [ -s ~/.ssh/keys/github ]
+  then
+    ghkey_perm=$(stat -c "%a" ~/.ssh/keys/github)
+    if [ "$ghkey_perm" -ne 400 ]
+    then
+      ghkey_status="installed (permission is NOT 400!)"
+    else
+      ghkey_status="installed"
+    fi
+    printf "%20s: %s\n" "GitHub SSH key" "$ghkey_status"
+  else
+    printf "%20s: %s\n" "GitHub SSH key" "NOT installed"
+  fi
+}
+
+mount-bioservers() {
+  if [ -z $1 ]
+  then
+    mounts=( /space /srv /raw_data /incoming /databases /shared-nfs /user_data )
+  else
+    mounts=$1
+  fi
+  for mount in "${mounts[@]}"
+  do
+    echo -n "mounting $mount: "
+    if df --output=target | grep -q "$mount"
+    then
+      echo "already mounted"
+    else
+      if [ ! -d "$mount" ]
+      then
+        sudo mkdir -p "$mount"
+        sudo chown "$(id -u):$(id -g)" "$mount"
+      fi
+      #fusermount -u "$mount" 2> /dev/null
+      sshfs -o reconnect,ServerAliveInterval=15 \
+        "{{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").bioserver_sshfs_host.value }}:${mount}" \
+        "${mount}" \
+        && echo "done!"
+    fi
+  done
+}

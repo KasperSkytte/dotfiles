@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+export EDITOR="nano"
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+export PATH="${HOME}/.local/bin:${HOME}/bin:${PATH}"
+export CR_PAT="{{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").CR_PAT.value }}"
