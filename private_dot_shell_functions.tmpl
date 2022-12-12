@@ -1,4 +1,18 @@
 #!/usr/bin/env bash
+#add first arg to $PATH if non-existent already. 
+#to-do: needs to check for empty arg first
+pathmunge () {
+  if ! echo $PATH | grep -Eq "(^|:)$1($|:)"
+  then
+    if [ "$2" = "after" ]
+    then
+      PATH=$PATH:$1
+    else
+      PATH=$1:$PATH
+    fi
+  fi
+}
+
 #from https://github.com/SixArm/gpg-encrypt
 #password-encrypt a file
 gpg_encrypt() {
