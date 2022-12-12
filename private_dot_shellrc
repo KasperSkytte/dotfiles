@@ -22,12 +22,6 @@ then
     . ~/.shell_aliases
 fi
 
-#bitwarden shell completion
-if command -v bw 1> /dev/null
-then
-  eval "$(bw completion --shell zsh); compdef _bw bw;"
-fi
-
 # if on bioservers go to mounted home folder
 if [[ "$USER" == "ksa@bio.aau.dk" ]]
 then
@@ -40,4 +34,3 @@ then
     fi
   fi
 fi
-
