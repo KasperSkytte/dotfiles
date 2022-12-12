@@ -3,5 +3,6 @@ My dotfiles for Linux, managed using chezmoi.io.
 
 ## Install
 ```
-curl -fSsl https://raw.githubusercontent.com/KasperSkytte/dotfiles/main/install.sh | bash
+wget -q https://raw.githubusercontent.com/KasperSkytte/dotfiles/main/install_dotfiles.sh
+bash install_dotfiles.sh
 ```

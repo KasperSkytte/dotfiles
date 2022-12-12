@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# this script installs bitwarden and unlocks the vault
+#this script installs bitwarden and unlocks the vault
 #then installs chezmoi and applies the dotfiles
 
 set -eu
