@@ -20,6 +20,10 @@ then
     --depth 1 \
     https://github.com/zsh-users/zsh-autosuggestions \
     "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+  git clone \
+    --depth 1 \
+    https://github.com/zsh-users/zsh-syntax-highlighting.git \
+    "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
 fi
 
 #the ohmyzsh install script might not succeed in setting the default shell

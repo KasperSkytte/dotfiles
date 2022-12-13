@@ -80,6 +80,7 @@ ZSH_THEME_RANDOM_CANDIDATES=( "re5et" "bureau" "ys")
 plugins=(
   git
   zsh-autosuggestions
+  zsh-syntax-highlighting
 )
 
 # User configuration
