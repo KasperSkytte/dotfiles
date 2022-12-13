@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -eu
 set -o pipefail
-if command -v gnome-terminal &> /dev/null
+if command -v gnome-terminal >/dev/null 2>&1
 then
-  if command -v gsettings &> /dev/null
+  if command -v gsettings >/dev/null 2>&1
   then
     echo "Adjusting GNOME Terminal settings"
     GNOME_TERMINAL_PROFILE="$(gsettings get org.gnome.Terminal.ProfilesList default | awk -F \' '{print $2}')"
     gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:${GNOME_TERMINAL_PROFILE}/" font 'MesloLGS NF 12'
-    if command -v zsh &> /dev/null
+    if command -v zsh >/dev/null 2>&1
     then
       gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:${GNOME_TERMINAL_PROFILE}/" use-custom-command true
       gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:${GNOME_TERMINAL_PROFILE}/" custom-command '/usr/bin/zsh'

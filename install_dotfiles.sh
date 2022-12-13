@@ -10,7 +10,7 @@ arch=$(uname -m)
 export BINDIR=${BINDIR:-"$HOME/.local/bin"}
 
 echo "Checking whether bw (Bitwarden CLI) is installed..."
-if ! command -v bw &> /dev/null
+if ! command -v bw >/dev/null 2>&1
 then
   if [ "$arch" == "x86_64" ]
   then
@@ -34,7 +34,7 @@ then
   fi
 fi
 
-if command -v bw 1> /dev/null
+if command -v bw >/dev/null 2>&1
 then
   bw_status="$(bw status 2> /dev/null | grep -io '\"status\":.*[^}]')"
   if echo "$bw_status" | grep -q '\"unauthenticated\"'
@@ -46,7 +46,7 @@ then
     echo "Bitwarden vault is locked..."
     export BW_SESSION=$(bw unlock --raw)
   fi
-elif ! command -v bw 1> /dev/null
+elif ! command -v bw >/dev/null 2>&1
 then
   echo "bw (Bitwarden CLI) is not installed or available in \$PATH"
 fi

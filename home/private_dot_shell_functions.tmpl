@@ -123,8 +123,8 @@ welcome_msg() {
   echo "Welcome Kasper! The dotfiles repo is installed on this account. Shell is: ${SHELL}"
   echo
 
-  #1password-cli status
-  if command -v bw 1> /dev/null
+  #bw-cli status
+  if command -v bw >/dev/null 2>&1
   then
     printf "%20s: %s\n" "Bitwarden CLI" "installed ($(bw --version || true))"
   else
@@ -132,7 +132,7 @@ welcome_msg() {
   fi
 
   #teleport status
-  if command -v teleport 1> /dev/null
+  if command -v teleport >/dev/null 2>&1
   then
     printf "%20s: %s\n" "teleport" "installed ($(teleport version || true))"
   else
