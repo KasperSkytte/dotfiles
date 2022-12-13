@@ -1,0 +1,6 @@
+{{ if ne .chezmoi.osRelease.id "pop" }}
+.p10k.zsh_popos
+{{ end }}
+{{ if eq .chezmoi.osRelease.id "pop" }}
+.p10k.zsh_default
+{{ end }}
