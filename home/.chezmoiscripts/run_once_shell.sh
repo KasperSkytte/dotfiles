@@ -13,7 +13,7 @@ then
   then
     echo "Installing oh-my-zsh alongside plugins and themes..."
     export KEEP_ZSHRC="yes"
-    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     git clone \
       --depth=1 \
       https://github.com/romkatv/powerlevel10k.git \
