@@ -10,6 +10,7 @@ teleport_join_token=${teleport_join_token:-""}
 #perhaps check for policykit-1 before doing anything (user-level service)
 if [ -n "$teleport_join_token" ]
 then
+  echo "Installing and configuring teleport (as a user-level service)"
   go_version=${go_version:-"1.19"}
   teleport_release=${teleport_release:-"v11.0.1"} #including the "v" prefix
   teleport_ca_pin_hash="{{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").teleport_capin.value }}"
@@ -92,5 +93,5 @@ teleport.service
   systemctl --user restart teleport.service
   loginctl enable-linger
 else
-  echo "Teleport has not been installed and configured (for the current user) since no \"teleport_join_token\" shell variable is available."
+  echo "Teleport has not been installed and configured (for the current user) since no \"teleport_join_token\" shell variable is available. Run (maybe?) \"chezmoi state reset\" to run this again with the next chezmoi apply."
 fi
