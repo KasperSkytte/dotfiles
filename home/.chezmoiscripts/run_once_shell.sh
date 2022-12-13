@@ -9,12 +9,16 @@ sh -c "$(curl -fsLS https://starship.rs/install.sh)" -- -y --bin-dir "${BINDIR}"
 
 if [ ! -d "${HOME}/.oh-my-zsh" ]
 then
-  echo "Installing oh-my-zsh and plugins..."
+  echo "Installing oh-my-zsh alongside plugins and themes..."
   export KEEP_ZSHRC="yes"
   sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
   git clone \
-    https://github.com/zsh-users/zsh-autosuggestions \
+    --depth=1 \
+    https://github.com/romkatv/powerlevel10k.git \
+    "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+  git clone \
     --depth 1 \
+    https://github.com/zsh-users/zsh-autosuggestions \
     "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
 fi
 
@@ -26,7 +30,14 @@ then
 fi
 
 #various autocompletions (only for zsh, bash goes to ~/.bash_completion)
-#assumes oh-my-zsh is installed
+#assumes oh-my-zsh is installed. Completions might need to be updated with
+#newer versions of things to stay compatible
 mkdir -p "$HOME/.oh-my-zsh/completions/"
-"${BINDIR}"/starship completions zsh > "${HOME}/.oh-my-zsh/completions/_starship"
-bw completion --shell zsh > "${HOME}/.oh-my-zsh/completions/_bw"
+if [ -s "${HOME}/.oh-my-zsh/completions/_starship" ]
+then
+  "${BINDIR}"/starship completions zsh > "${HOME}/.oh-my-zsh/completions/_starship"
+fi
+if [ -s "${HOME}/.oh-my-zsh/completions/_bw" ]
+then
+  bw completion --shell zsh > "${HOME}/.oh-my-zsh/completions/_bw"
+fi

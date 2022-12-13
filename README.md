@@ -12,3 +12,4 @@ bash install_dotfiles.sh
  - powerlevel10k theme instead of starship?
  - Conditional configuration based on shell (often only bash available)
  - Configure VSCode font
+ - alias ls with exa, only if installed
