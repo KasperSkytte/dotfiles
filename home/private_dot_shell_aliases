@@ -7,4 +7,6 @@ alias cdc='cd ${HOME}/.local/share/chezmoi'
 if command -v exa >/dev/null 2>&1
 then
   alias ll='exa -lh'
+else
+  alias ll='ls -lh'
 fi
