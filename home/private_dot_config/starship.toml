@@ -1,83 +1,78 @@
-[aws]
-symbol = "  "
+add_newline = true
+format = """
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$fill\
+$cmd_duration\
+$username\
+$hostname\
+$time\
+$line_break\
+$conda\
+$python\
+$rlang\
+$character"""
 
-[buf]
-symbol = " "
+[username]
+show_always = true
+style_root = "bold red"
+style_user = "dimmed green"
+format = " [$user]($style)"
 
-[c]
-symbol = " "
-
-[conda]
-symbol = " "
-
-[dart]
-symbol = " "
+[hostname]
+ssh_only = true
+format = "@[$hostname$ssh_symbol]($style)"
+trim_at = ""
 
 [directory]
-read_only = " "
+style = "blue"
+format = "[$path]($style)[$read_only]($read_only_style) "
+truncation_length = 4
+truncation_symbol = ".. "
 
-[docker_context]
-symbol = " "
-
-[elixir]
-symbol = " "
-
-[elm]
-symbol = " "
+[character]
+success_symbol = "[❯](green)"
+error_symbol = "[❯](red)"
+vimcmd_symbol = "[❮](purple)"
 
 [git_branch]
-symbol = " "
+format = "[$branch]($style)"
+style = "bright-black"
 
-[golang]
-symbol = " "
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bright-black"
 
-[haskell]
-symbol = " "
+[git_status]
+format = "[[(*$conflicted$untracked$modified$staged$renamed$deleted)](218) ($ahead_behind$stashed)]($style)"
+style = "cyan"
 
-[hg_branch]
-symbol = " "
+[fill]
+symbol = " "
+style = "bold black"
 
-[java]
-symbol = " "
+[cmd_duration]
+format = "[$duration]($style)"
+style = "yellow"
+show_milliseconds = false
 
-[julia]
-symbol = " "
+[time]
+disabled = false
+format = " \\[[$time]($style)\\]"
+style = "dimmed yellow"
 
-[lua]
-symbol = " "
-
-[memory_usage]
-symbol = " "
-
-[meson]
-symbol = "喝 "
-
-[nim]
-symbol = " "
-
-[nix_shell]
-symbol = " "
-
-[nodejs]
-symbol = " "
-
-[package]
-symbol = " "
+[conda]
+ignore_base = false
+format = "[$symbol\\($environment\\)]($style) "
 
 [python]
-symbol = " "
+format = "[$virtualenv]($style) "
+style = "bright-black"
 
 [rlang]
-symbol = "ﳒ "
+format = "via [R ($version )]($style)"
+detect_files = ['.Rprofile', 'DESCRIPTION']
 
-[ruby]
-symbol = " "
-
-[rust]
-symbol = " "
-
-[scala]
-symbol = " "
-
-[spack]
-symbol = "🅢 "
+[singularity]
