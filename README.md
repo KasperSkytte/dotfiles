@@ -10,7 +10,4 @@ bash install_dotfiles.sh
 
 ## To-do
  - https://starship.rs/advanced-config/#enable-right-prompt
- - powerlevel10k theme instead of starship?
- - Conditional configuration based on shell (often only bash available)
- - Configure VSCode font
- - alias ls with exa, only if installed
+ - Conditional starship configuration based on shell (often only bash available)
