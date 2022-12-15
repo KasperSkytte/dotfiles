@@ -18,7 +18,7 @@ $character"""
 [username]
 show_always = true
 style_root = "bold red"
-style_user = "dimmed green"
+style_user = "purple"
 format = " [$user]($style)"
 
 [hostname]
