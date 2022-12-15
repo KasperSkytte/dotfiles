@@ -7,10 +7,10 @@ set -eu
 
 teleport_join_token=${teleport_join_token:-""}
 
+echo "Installing and configuring teleport (as a user-level service)"
 #perhaps check for policykit-1 before doing anything (user-level service)
 if [ -n "$teleport_join_token" ]
 then
-  echo "Installing and configuring teleport (as a user-level service)"
   go_version=${go_version:-"1.19"}
   teleport_release=${teleport_release:-"v11.0.1"} #including the "v" prefix
   teleport_ca_pin_hash="{{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").teleport_capin.value }}"
