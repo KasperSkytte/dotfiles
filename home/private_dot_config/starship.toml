@@ -18,7 +18,7 @@ $character"""
 [username]
 show_always = true
 style_root = "bold red"
-style_user = "purple"
+style_user = "dimmed yellow"
 format = " [$user]($style)"
 
 [hostname]
@@ -61,7 +61,7 @@ show_milliseconds = false
 [time]
 disabled = false
 format = " \\[[$time]($style)\\]"
-style = "dimmed yellow"
+style = "dimmed white"
 
 [conda]
 ignore_base = false
