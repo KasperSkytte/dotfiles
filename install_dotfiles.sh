@@ -1,10 +1,38 @@
 #!/usr/bin/env bash
-#this script installs bitwarden and unlocks the vault
-#then installs chezmoi and applies the dotfiles
-
+# This script installs bitwarden and unlocks the vault
+# then installs chezmoi and applies the dotfiles.
+# Currently only for on Debian/Ubuntu systems.
 set -eu
+
+#vars
 bw_url="https://vault.bitwarden.com/download/?app=cli&platform=linux"
 arch=$(uname -m)
+req_pkgs="wget curl git zcat"
+
+#functions
+user_can_sudo() {
+  command -v sudo >/dev/null 2>&1 || return 1
+  ! LANG= sudo -n -v 2>&1 | grep -q "may not run sudo"
+}
+
+#check for some required system tools first
+if command -v dpkg >/dev/null 2>&1
+then
+  if ! dpkg -s $req_pkgs >/dev/null 2>&1
+  then
+    echo "Some required tools are not installed, installing if allowed..."
+    if ! user_can_sudo
+    then
+      echo "User can't sudo, can't install. Exiting..."
+      exit 1
+    fi
+    sudo apt-get update -qqy
+    sudo apt-get install -y $req_pkgs
+  fi
+else
+  echo "dpkg not found. Are we on Debian/Ubuntu?"
+  exit 1
+fi
 
 #prefix applies to the chezmoi install script too
 export BINDIR=${BINDIR:-"$HOME/.local/bin"}
