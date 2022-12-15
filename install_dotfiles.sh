@@ -7,7 +7,7 @@ set -eu
 #vars
 bw_url="https://vault.bitwarden.com/download/?app=cli&platform=linux"
 arch=$(uname -m)
-req_pkgs="wget curl git zcat"
+req_pkgs="wget curl git gzip"
 
 #functions
 user_can_sudo() {
