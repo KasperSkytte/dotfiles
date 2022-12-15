@@ -1,2 +1,2 @@
-.oh-my-zsh/completions
-#.oh-my-zsh/cache #aint working if it doesn't exist!
+.oh-my-zsh/completions/**
+.oh-my-zsh/cache/**
