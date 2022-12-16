@@ -17,6 +17,7 @@ then
   then
     echo "Bitwarden vault is unlocked. Syncing vault..."
     bw sync
+    bw update
   fi
 elif ! command -v bw >/dev/null 2>&1
 then

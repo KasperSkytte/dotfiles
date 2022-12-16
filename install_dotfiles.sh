@@ -5,7 +5,7 @@
 set -eu
 
 #vars
-bw_url="https://vault.bitwarden.com/download/?app=cli&platform=linux"
+bw_url="https://github.com/bitwarden/clients/releases/download/cli-v2022.11.0/bw-linux-2022.11.0.zip"
 arch=$(uname -m)
 req_pkgs="wget curl git gzip"
 
@@ -48,7 +48,7 @@ then
       echo "bw (Bitwarden CLI) is not installed or available in \$PATH, installing into ${BINDIR}..."
       tmpfile=$(mktemp)
       wget "$bw_url" -O "$tmpfile"
-      zcat "$tmpfile" -d > "${BINDIR}/bw"
+      unzip "$tmpfile" bw -d > "${BINDIR}"
       rm -f "$tmpfile"
       chmod +x "${BINDIR}/bw"
     fi
@@ -64,6 +64,7 @@ fi
 
 if command -v bw >/dev/null 2>&1
 then
+  bw update
   bw_status="$(bw status 2> /dev/null | grep -io '\"status\":.*[^}]')"
   if echo "$bw_status" | grep -q '\"unauthenticated\"'
   then
