@@ -48,7 +48,7 @@ then
       echo "bw (Bitwarden CLI) is not installed or available in \$PATH, installing into ${BINDIR}..."
       tmpfile=$(mktemp)
       wget "$bw_url" -O "$tmpfile"
-      unzip "$tmpfile" bw -d > "${BINDIR}"
+      unzip "$tmpfile" bw -d "${BINDIR}"
       rm -f "$tmpfile"
       chmod +x "${BINDIR}/bw"
     fi
