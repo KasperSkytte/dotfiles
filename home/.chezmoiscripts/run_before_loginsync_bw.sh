@@ -15,7 +15,7 @@ then
     exit 1
   elif echo "$bw_status" | grep -q '\"unlocked\"'
   then
-    echo "Bitwarden vault is unlocked. Syncing vault..."
+    echo "Bitwarden vault is unlocked. Syncing vault and checking for updates..."
     bw sync
     bw update
   fi
