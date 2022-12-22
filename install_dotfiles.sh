@@ -7,7 +7,7 @@ set -eu
 #vars
 bw_url="https://github.com/bitwarden/clients/releases/download/cli-v2022.11.0/bw-linux-2022.11.0.zip"
 arch=$(uname -m)
-req_pkgs="wget curl git gzip"
+req_pkgs="wget curl git gzip unzip"
 
 #functions
 user_can_sudo() {
