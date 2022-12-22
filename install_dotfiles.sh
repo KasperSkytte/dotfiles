@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # This script installs bitwarden and unlocks the vault
 # then installs chezmoi and applies the dotfiles.
-# Currently only for on Debian/Ubuntu systems.
+# Currently only for Debian/Ubuntu systems (but it doesn't check for that currently).
 set -eu
 
 #vars
@@ -15,20 +15,33 @@ user_can_sudo() {
   ! LANG= sudo -n -v 2>&1 | grep -q "may not run sudo"
 }
 
+#function to check if executable(s) are available in $PATH
+#example usage: checkCommand minimap2 parallel somethirdprogram
+checkCommand() {
+  argsA=( "$@" )
+  local exit=false
+  for arg in "${argsA[@]}"
+  do
+    if ! command -v "$arg" >/dev/null 2>&1
+    then
+      echo "${arg}: command not found"
+      exit=true
+    fi
+  done
+
+  if $exit
+  then
+    echo
+    echo "Please make sure the above command(s) are installed, \
+executable, and available somewhere in the \$PATH variable."
+    exit 1
+  fi
+}
+
 #check for some required system tools first
 if command -v dpkg >/dev/null 2>&1
 then
-  if ! dpkg -s $req_pkgs >/dev/null 2>&1
-  then
-    echo "Some required tools are not installed, installing if allowed..."
-    if ! user_can_sudo
-    then
-      echo "User can't sudo, can't install. Exiting..."
-      exit 1
-    fi
-    sudo apt-get update -qqy
-    sudo apt-get install -y $req_pkgs
-  fi
+  checkCommand $req_pkgs
 else
   echo "dpkg not found. Are we on Debian/Ubuntu?"
   exit 1
@@ -46,8 +59,14 @@ then
     if [ ! -s "${BINDIR}/bw" ]
     then
       echo "bw (Bitwarden CLI) is not installed or available in \$PATH, installing into ${BINDIR}..."
+      bwdatapath="${HOME}/.config/Bitwarden CLI/data.json"
+      if [ -s "${bwdatapath}" ]
+      then
+        echo "${bwdatapath} already exists. Installing Bitwarden CLI using the configuration from a previous installation is asking for trouble. Please resolve manually. Exiting..."
+        exit 1
+      fi
       tmpfile=$(mktemp)
-      wget "$bw_url" -O "$tmpfile"
+      wget "$bw_url" -q -O "$tmpfile"
       unzip "$tmpfile" bw -d "${BINDIR}"
       rm -f "$tmpfile"
       chmod +x "${BINDIR}/bw"
