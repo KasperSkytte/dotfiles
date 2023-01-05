@@ -1,5 +1,5 @@
 [user]
-	email = {{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").gitconfig_email.value }}
+	email = github@kasper.slmail.me
 	name = Kasper Skytte Andersen
 [credential]
 	helper = cache
