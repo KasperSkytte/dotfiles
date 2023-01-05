@@ -216,3 +216,15 @@ bwsshconfigupdate() {
     echo "bw (Bitwarden CLI) is not installed or available in \$PATH. Please install."
   fi
 }
+
+startsshagent() {
+  if ps -p $SSH_AGENT_PID > /dev/null 2>&1
+  then
+    echo "ssh-agent is already running with the following keys:"
+    ssh-add -l
+  else
+    shellname="$(basename ${SHELL})"
+    echo "starting ssh-agent with shell: ${shellname}"
+    exec ssh-agent "$shellname"
+  fi
+}
