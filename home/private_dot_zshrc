@@ -117,12 +117,6 @@ then
     . ~/.shellrc
 fi
 
-#bitwarden shell completion
-if command -v bw >/dev/null 2>&1
-then
-  #eval "$(bw completion --shell zsh); compdef _bw bw;"
-fi
-
 #enable starship prompt if installed
 if command -v starship >/dev/null 2>&1
 then

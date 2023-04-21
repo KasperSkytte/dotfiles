@@ -15,9 +15,9 @@ if [ -s "${HOME}/.oh-my-zsh/completions/_starship" ]
 then
   "${BINDIR}"/starship completions zsh > "${HOME}/.oh-my-zsh/completions/_starship"
 fi
-if [ -s "${HOME}/.oh-my-zsh/completions/_bw" ]
+if [ -s "${HOME}/.oh-my-zsh/completions/_op" ]
 then
-  bw completion --shell zsh > "${HOME}/.oh-my-zsh/completions/_bw"
+  op completion zsh > "${HOME}/.oh-my-zsh/completions/_op"
 fi
 if [ -s "${HOME}/.oh-my-zsh/completions/_chezmoi" ]
 then

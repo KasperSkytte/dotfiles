@@ -1,13 +1,20 @@
 #!/usr/bin/env bash
-# This script installs bitwarden and unlocks the vault
+# This script installs 1password CLI and unlocks the vault
 # then installs chezmoi and applies the dotfiles.
 # Currently only for Debian/Ubuntu systems (but it doesn't check for that currently).
 set -eu
 
 #vars
-bw_url="https://github.com/bitwarden/clients/releases/download/cli-v2022.11.0/bw-linux-2022.11.0.zip"
-arch=$(uname -m)
+arch="$(uname -m)"
+if [ "$arch" == "x86_64" ]
+then
+  arch="amd64"
+fi
+op_version="v2.17.0-beta.01"
+op_url="https://cache.agilebits.com/dist/1P/op2/pkg/${op_version}/op_linux_${arch}_${op_version}.zip"
 req_pkgs="wget curl git gzip unzip"
+#prefix applies to the chezmoi install script too
+export BINDIR=${BINDIR:-"$HOME/.local/bin"}
 
 #functions
 user_can_sudo() {
@@ -16,7 +23,7 @@ user_can_sudo() {
 }
 
 #function to check if executable(s) are available in $PATH
-#example usage: checkCommand minimap2 parallel somethirdprogram
+#example usage: checkCommand git curl wget somethirdprogram
 checkCommand() {
   argsA=( "$@" )
   local exit=false
@@ -47,56 +54,54 @@ else
   exit 1
 fi
 
-#prefix applies to the chezmoi install script too
-export BINDIR=${BINDIR:-"$HOME/.local/bin"}
-
-echo "Checking whether bw (Bitwarden CLI) is installed..."
-if ! command -v bw >/dev/null 2>&1
+echo "Checking whether op (1password CLI) is installed..."
+if ! command -v op >/dev/null 2>&1
 then
-  if [ "$arch" == "x86_64" ]
+  if [ "$arch" == "amd64" ]
   then
     mkdir -p "${BINDIR}"
-    if [ ! -s "${BINDIR}/bw" ]
+    if [ ! -s "${BINDIR}/op" ]
     then
-      echo "bw (Bitwarden CLI) is not installed or available in \$PATH, installing into ${BINDIR}..."
-      bwdatapath="${HOME}/.config/Bitwarden CLI/data.json"
-      if [ -s "${bwdatapath}" ]
-      then
-        echo "${bwdatapath} already exists. Installing Bitwarden CLI using the configuration from a previous installation is asking for trouble. Please resolve manually. Exiting..."
-        exit 1
-      fi
+      echo "op (1password CLI) is not installed or available in \$PATH, installing version ${op_version} into ${BINDIR}..."
       tmpfile=$(mktemp)
-      wget "$bw_url" -q -O "$tmpfile"
-      unzip "$tmpfile" bw -d "${BINDIR}"
+      wget "$op_url" -O "$tmpfile"
+      unzip -o "$tmpfile" op -d "${BINDIR}"
+      #gpg --receive-keys 3FEF9748469ADBE15DA7CA80AC2D62742012EA22
+      #unzip -o -p "$tmpfile" op.sig | gpg --verify - "${BINDIR}/op"
       rm -f "$tmpfile"
-      chmod +x "${BINDIR}/bw"
+      chmod +x "${BINDIR}/op"
     fi
     if ! echo "$PATH" | grep -Eq "(^|:)${BINDIR}($|:)"
     then
       export PATH="${BINDIR}:${PATH}"
     fi
   else
-    echo "Can't install bw (Bitwarden CLI). Unsupported architecture \"${arch}\", only x86_64 is supported."
+    echo "Can't install op (1password CLI). Unsupported architecture \"${arch}\", only x86_64 (amd64) is supported at the moment."
     exit 1
   fi
 fi
 
-if command -v bw >/dev/null 2>&1
+#may need to check for this: https://developer.1password.com/docs/cli/app-integration#turn-on-the-app-integration-and-sign-in-to-your-account
+if command -v op >/dev/null 2>&1
 then
-  bw update
-  bw_status="$(bw status 2> /dev/null | grep -io '\"status\":.*[^}]')"
-  if echo "$bw_status" | grep -q '\"unauthenticated\"'
+  # if getent group onepassword-cli
+  # then
+  #   sudo chgrp onepassword-cli "${BINDIR}/op"
+  #   chmod g+s "${BINDIR}/op"
+  # fi
+  op update
+  if [ "$(op account list)" == "" ]
   then
-    echo "Not authenticated with Bitwarden..."
-    export BW_SESSION=$(bw login --raw)
-  elif echo "$bw_status" | grep -q '\"locked\"'
+    echo "No 1password accounts, please add one (using address: my.1password.com)..."
+    eval $(op account add --address my.1password.com --signin)
+  elif ! op whoami 2> /dev/null
   then
-    echo "Bitwarden vault is locked..."
-    export BW_SESSION=$(bw unlock --raw)
+    echo "1password is not signed in, please sign in..."
+    eval $(op signin)
   fi
-elif ! command -v bw >/dev/null 2>&1
+elif ! command -v op >/dev/null 2>&1
 then
-  echo "bw (Bitwarden CLI) is not installed or available in \$PATH"
+  echo "op (1password CLI) is not installed or available in \$PATH"
 fi
 
 echo "Installing chezmoi and applying dotfiles..."

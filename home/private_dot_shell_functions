@@ -75,11 +75,10 @@ gotifier() {
   logfile=$(mktemp)
 
   post_gotify() {
-  token="{{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").gotify_token.value }}"
     title="$1"
     markdown_msg="$2"
     priority="$3"
-    URL="{{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").gotify_url.value }}/message?token=${token}"
+    URL=$(op read op://Private/gotifier/url)
 
     echo "Gotifying..."
 
@@ -128,10 +127,18 @@ welcome_msg() {
   echo "Welcome Kasper! The dotfiles repo is installed on this account. Shell is: ${SHELL}"
   echo
 
+  #op-cli status
+  if command -v op >/dev/null 2>&1
+  then
+    printf "%20s: %s\n" "1password CLI" "installed ($(op --version || true))"
+  else
+    printf "%20s: %s\n" "1password CLI" "NOT installed"
+  fi
+
   #bw-cli status
   if command -v bw >/dev/null 2>&1
   then
-    printf "%20s: %s\n" "Bitwarden CLI" "installed ($(bw --version || true))"
+    printf "%20s: %s\n" "Bitwarden CLI" "installed, please remove it"
   else
     printf "%20s: %s\n" "Bitwarden CLI" "NOT installed"
   fi
@@ -181,40 +188,11 @@ mount-bioservers() {
       fi
       #fusermount -u "$mount" 2> /dev/null
       sshfs -o reconnect,ServerAliveInterval=15 \
-        "{{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").bioserver_sshfs_host.value }}:${mount}" \
+        "$(op read op://Private/bioservers/url):${mount}" \
         "${mount}" \
         && echo "done!"
     fi
   done
-}
-
-#function to update SSH config file attachment on bitwarden
-#not possible to update an existing file, only delete and create a new one
-#which will have a different ID
-bwsshconfigupdate() {
-  local sshconfig="${HOME}/.ssh/config"
-  if command -v bw >/dev/null 2>&1
-  then
-    if [ -s "$sshconfig" ]
-    then
-      bw sync
-      if command -v jq >/dev/null 2>&1
-      then
-        local itemID="1b98aced-b57c-4316-9d33-af6900b7dc70"
-        local attachmentID=$(bw get item "$itemID" --raw | jq '.attachments[0].id' -r)
-        bw delete attachment "$attachmentID" --itemid "$itemID" --quiet
-        bw create attachment --file "$sshconfig" --itemid "$itemID" --quiet
-      elif ! command -v jq >/dev/null 2>&1
-      then
-        echo "jq is not installed or available in \$PATH. Please install."
-      fi
-    else
-      echo "${sshconfig} is empty or doesn't exist"
-    fi
-  elif ! command -v bw >/dev/null 2>&1
-  then
-    echo "bw (Bitwarden CLI) is not installed or available in \$PATH. Please install."
-  fi
 }
 
 startsshagent() {

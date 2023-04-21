@@ -13,8 +13,8 @@ if [ -n "$teleport_join_token" ]
 then
   go_version=${go_version:-"1.19"}
   teleport_release=${teleport_release:-"v11.1.4"} #including the "v" prefix
-  teleport_ca_pin_hash="{{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").teleport_capin.value }}"
-  teleport_proxy="{{ (bitwardenFields "item" "1b98aced-b57c-4316-9d33-af6900b7dc70").teleport_proxy.value }}"
+  teleport_ca_pin_hash="$(op://Private/teleport/ca_pin)"
+  teleport_proxy="$(op read op://Private/teleport/proxy)"
   teleport_dir="${HOME}/.local/teleport"
   systemd_service_dir="${HOME}/.config/systemd/user/"
   BINDIR="${HOME}/.local/bin"
