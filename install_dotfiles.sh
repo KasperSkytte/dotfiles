@@ -104,5 +104,24 @@ then
   echo "op (1password CLI) is not installed or available in \$PATH"
 fi
 
-echo "Installing chezmoi and applying dotfiles..."
-sh -c "$(curl -fsLSk https://github.com/KasperSkytte/chezmoi/raw/master/assets/scripts/install.sh)" -- init --apply kasperskytte
+echo "Checking whether chezmoi is installed..."
+if ! command -v chezmoi >/dev/null 2>&1
+then
+  if grep -q 'Pop!_OS' /etc/os-release
+  then
+    echo "Looks like we are on Pop!_OS, and polkit doesn't work well with 1password CLI when \"Connect with 1Password CLI\" is enabled in the 1Password app, see https://github.com/twpayne/chezmoi/issues/2687. The current fix is to install chezmoi system-wide, which we'll attempt to do now..."
+    if user_can_sudo
+    then
+      #expecting /usr/local/bin to be in $PATH, not checking for that
+      sudo sh -c "$(curl -fsLSk https://github.com/KasperSkytte/chezmoi/raw/master/assets/scripts/install.sh)" -- -b "/usr/local/bin/"
+    else
+      echo "User can't sudo, aborting..."
+      exit 1
+    fi
+  else
+    sh -c "$(curl -fsLSk https://github.com/KasperSkytte/chezmoi/raw/master/assets/scripts/install.sh)"
+  fi
+fi
+
+echo "(Re)applying dotfiles..."
+chezmoi init --apply kasperskytte
