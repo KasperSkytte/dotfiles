@@ -14,6 +14,10 @@ op_url="https://cache.agilebits.com/dist/1P/op2/pkg/${op_version}/op_linux_${arc
 req_pkgs="wget curl git gzip unzip"
 #prefix applies to the chezmoi install script too
 export BINDIR=${BINDIR:-"$HOME/.local/bin"}
+if ! echo "$PATH" | grep -Eq "(^|:)${BINDIR}($|:)"
+then
+  export PATH="${BINDIR}:${PATH}"
+fi
 
 #functions
 user_can_sudo() {
@@ -63,16 +67,12 @@ then
     then
       echo "op (1password CLI) is not installed or available in \$PATH, installing version ${op_version} into ${BINDIR}..."
       tmpfile=$(mktemp)
-      wget "$op_url" -O "$tmpfile"
+      wget -q "$op_url" -O "$tmpfile"
       unzip -o "$tmpfile" op -d "${BINDIR}"
       #gpg --receive-keys 3FEF9748469ADBE15DA7CA80AC2D62742012EA22
       #unzip -o -p "$tmpfile" op.sig | gpg --verify - "${BINDIR}/op"
       rm -f "$tmpfile"
       chmod +x "${BINDIR}/op"
-    fi
-    if ! echo "$PATH" | grep -Eq "(^|:)${BINDIR}($|:)"
-    then
-      export PATH="${BINDIR}:${PATH}"
     fi
   else
     echo "Can't install op (1password CLI). Unsupported architecture \"${arch}\", only x86_64 (amd64) is supported at the moment."

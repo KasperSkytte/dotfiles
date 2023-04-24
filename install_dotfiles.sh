@@ -7,6 +7,10 @@ set -eu
 req_pkgs="wget curl git gzip unzip"
 #prefix applies to the chezmoi install script too
 export BINDIR=${BINDIR:-"$HOME/.local/bin"}
+if ! echo "$PATH" | grep -Eq "(^|:)${BINDIR}($|:)"
+then
+  export PATH="${BINDIR}:${PATH}"
+fi
 
 #functions
 user_can_sudo() {
