@@ -1,6 +1,6 @@
-{{ if eq .chezmoi.osRelease.name "Pop!_OS" }}
-{{ onepasswordRead "op://Private/SSH config/notes" }}
-{{ else }}
+{{- if eq .chezmoi.osRelease.name "Pop!_OS" -}}
+{{- onepasswordRead "op://Private/SSH config/notes" -}}
+{{- else -}}
 #github
 Host github.com
     HostName github.com
