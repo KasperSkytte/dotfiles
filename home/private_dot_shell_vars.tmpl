@@ -3,6 +3,6 @@ export EDITOR="nano"
 export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 export PATH="${HOME}/.local/bin:${HOME}/bin:${PATH}"
 export CR_PAT="op://Private/GHCR_PAT/CR_PAT"
-{{ if eq .chezmoi.osRelease.name "Pop!_OS" }}
+{{- if eq .chezmoi.osRelease.name "Pop!_OS" -}}
 export SSH_AUTH_SOCK=~/.1password/agent.sock
 {{ end }}
