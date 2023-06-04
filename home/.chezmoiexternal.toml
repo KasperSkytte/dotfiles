@@ -44,17 +44,17 @@
     refreshPeriod = "168h"
 ["{{ $fontDir }}/Fira Code Regular Nerd Font Complete Mono.ttf"]
     type = "file"
-    url = "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/FiraCode/Regular/complete/Fira Code Regular Nerd Font Complete Mono.ttf"
+    url = "https://github.com/ryanoasis/nerd-fonts/tree/bd93a872a6af6e90ee7a95106bce092bef495a11/patched-fonts/FiraCode/Regular/complete/Fira Code Regular Nerd Font Complete Mono.ttf"
     refreshPeriod = "168h"
 ["{{ $fontDir }}/Fira Code Regular Nerd Font Complete.ttf"]
     type = "file"
-    url = "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/FiraCode/Regular/complete/Fira Code Regular Nerd Font Complete.ttf"
+    url = "https://github.com/ryanoasis/nerd-fonts/tree/bd93a872a6af6e90ee7a95106bce092bef495a11/patched-fonts/FiraCode/Regular/complete/Fira Code Regular Nerd Font Complete.ttf"
     refreshPeriod = "168h"
 ["{{ $fontDir }}/Fira Code Bold Nerd Font Complete Mono.ttf"]
     type = "file"
-    url = "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/FiraCode/Bold/complete/Fira Code Bold Nerd Font Complete Mono.ttf"
+    url = "https://github.com/ryanoasis/nerd-fonts/tree/bd93a872a6af6e90ee7a95106bce092bef495a11/patched-fonts/FiraCode/Bold/complete/Fira Code Bold Nerd Font Complete Mono.ttf"
     refreshPeriod = "168h"
 ["{{ $fontDir }}/Fira Code Bold Nerd Font Complete.ttf"]
     type = "file"
-    url = "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/FiraCode/Bold/complete/Fira Code Bold Nerd Font Complete.ttf"
+    url = "https://github.com/ryanoasis/nerd-fonts/tree/bd93a872a6af6e90ee7a95106bce092bef495a11/patched-fonts/FiraCode/Bold/complete/Fira Code Bold Nerd Font Complete.ttf"
     refreshPeriod = "168h"
