@@ -9,7 +9,7 @@ if [ "$arch" == "x86_64" ]
 then
   arch="amd64"
 fi
-op_version="v2.17.0-beta.01"
+op_version="v2.19.0-beta.01"
 op_url="https://cache.agilebits.com/dist/1P/op2/pkg/${op_version}/op_linux_${arch}_${op_version}.zip"
 req_pkgs="wget curl git gzip unzip"
 #prefix applies to the chezmoi install script too
