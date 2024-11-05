@@ -21,16 +21,3 @@ if [ -f ~/.shell_aliases ]
 then
     . ~/.shell_aliases
 fi
-
-# if on bioservers go to mounted home folder
-if [[ "$USER" == "ksa@bio.aau.dk" ]]
-then
-  if [[ "$PWD" == "/user/bio.aau.dk/ksa" ]]
-  then
-    homedir="/user_data/ksa/"
-    if [[ -d "$homedir" ]]
-    then
-      cd "$homedir"
-    fi
-  fi
-fi
