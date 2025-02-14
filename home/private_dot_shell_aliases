@@ -5,7 +5,7 @@ alias opsignin='eval $(op signin)'
 alias cdc='cd ${HOME}/.local/share/chezmoi'
 if command -v exa >/dev/null 2>&1
 then
-  alias ll='exa -lh'
+  alias ll='exa -lhg'
 else
   alias ll='ls -lh'
 fi
